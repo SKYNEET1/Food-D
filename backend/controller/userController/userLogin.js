@@ -1,30 +1,31 @@
-const User = require('../model/User');
-const { comparePassword } = require('../utils/hash');
-const { generateAccessToken, generateRefreshToken } = require('../utils/jwt')
+const user = require('../../model/user');
+const { comparePassword } = require('../../utils/hash');
+const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt')
 
 exports.userLogin = async (req, res) => {
     try {
+        
         const { phoneNo, password, email } = req.body;
 
-        const user = await User.findOne({ $or: [{ phoneNo }, { email }] })
-        if (!user) {
+        const isUser = await user.findOne({ $or: [{ phoneNo }, { email }] })
+        if (!isUser) {
             return res.status(400).json({
                 status: false,
                 message: 'User is not registered'
             });
         }
 
-        const validPassword = await comparePassword(password, user.password);
+        const validPassword = await comparePassword(password, isUser.password);
         if (!validPassword) {
             return res.status(400).json({
                 message: "Invalid password"
             });
         }
 
-        const accessToken = generateAccessToken(user.phoneNo, user.category, user._id);
-        const refreshToken = generateRefreshToken(user.phoneNo, user._id);
-        user.refreshToken = refreshToken;
-        await user.save()
+        const accessToken = generateAccessToken(isUser.phoneNo, isUser.category, isUser._id);
+        const refreshToken = generateRefreshToken(isUser.phoneNo, isUser._id);
+        isUser.refreshToken = refreshToken;
+        await isUser.save()
 
         if (!accessToken) {
             return res.status(400).json({
@@ -60,6 +61,7 @@ exports.userLogin = async (req, res) => {
 
 
     } catch (error) {
+
         return res.status(500).json({
             message: "Error logging in",
             error: error.message

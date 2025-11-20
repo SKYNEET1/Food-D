@@ -8,6 +8,14 @@ const generateAccessToken = (phoneNo, category, _id) => {
     )
 }
 
+const generateOTPToken = (email,otp) => {
+    return jwt.sign(
+        {email, otp},
+        process.env.OTP_TOKEN,
+        {expiresIn: '1h'}
+    )
+}
+
 const generateRefreshToken = (phoneNo,_id) => {
     return jwt.sign(
         { phoneNo, _id },
@@ -16,4 +24,4 @@ const generateRefreshToken = (phoneNo,_id) => {
     )
 }
 
-module.exports = { generateAccessToken, generateRefreshToken }
+module.exports = { generateAccessToken, generateRefreshToken, generateOTPToken }

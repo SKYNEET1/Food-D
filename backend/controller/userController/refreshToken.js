@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
-const User = require("../model/User");
-const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
+const User = require("../../model/User");
+const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt');
 
 exports.refreshToken = async (req, res) => {
     try {
+
         const refreshToken = req.cookies?.refresh;
         if (!refreshToken) {
             return res.status(401).json({
@@ -50,6 +51,7 @@ exports.refreshToken = async (req, res) => {
         }
         
         try {
+
             user.refreshToken = newRefreshToken;
             await user.save();
 
@@ -68,10 +70,12 @@ exports.refreshToken = async (req, res) => {
             })
 
         } catch (error) {
+
             return res.status(500).json({
                 message: "Server error in saveing new refresh token in DB",
                 error:error.message
             });
+
         }
 
         return res.status(200).json({
@@ -79,9 +83,11 @@ exports.refreshToken = async (req, res) => {
             message: "Token refreshed successfully",
         });
     } catch (error) {
+
         return res.status(500).json({
             message: "Server error",
             error: error.message
         });
+        
     }
 }

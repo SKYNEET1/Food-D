@@ -1,8 +1,9 @@
-const User = require("../model/User");
+const user = require("../../model/User");
 
 exports.userLogout = async (req, res) => {
 
     try {
+
         const { phoneNo, _id } = req.user;
         if (!phoneNo || !_id) {
             return res.status(400).json({
@@ -10,7 +11,7 @@ exports.userLogout = async (req, res) => {
             });
         }
 
-        const user = await User.findOneAndUpdate(
+        const user = await user.findOneAndUpdate(
             { _id, phoneNo },
             {
                 $set: { refreshToken: undefined }
@@ -29,12 +30,15 @@ exports.userLogout = async (req, res) => {
             .json({
                 message: `User ${user.userName} with ${user.phoneNo} is logged out successfully`,
                 data: user
-            })       
+            }) 
+
     } catch (error) {
+
         console.log(error)
         return res.status(500).json({
             message: "Error logging out",
             error: error.message
         });
+        
     }
 }
