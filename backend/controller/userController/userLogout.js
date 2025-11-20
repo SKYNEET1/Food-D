@@ -1,4 +1,5 @@
-const user = require("../../model/User");
+const user = require("../../model/user");
+
 
 exports.userLogout = async (req, res) => {
 
@@ -39,6 +40,6 @@ exports.userLogout = async (req, res) => {
             message: "Error logging out",
             error: error.message
         });
-        
+
     }
 }

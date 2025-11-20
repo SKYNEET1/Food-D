@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require("../../model/User");
 const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt');
+const user = require('../../model/user');
 
 exports.refreshToken = async (req, res) => {
     try {
@@ -29,7 +29,7 @@ exports.refreshToken = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ phoneNo });
+        const user = await user.findOne({ phoneNo });
         if (!user) {
             return res.status(400).json({
                 message: "Invalid refresh token or user is not logged in"
@@ -88,6 +88,6 @@ exports.refreshToken = async (req, res) => {
             message: "Server error",
             error: error.message
         });
-        
+
     }
 }
