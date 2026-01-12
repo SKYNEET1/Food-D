@@ -8,16 +8,17 @@ const { userRegistration } = require('../controller/userController/userRegistrat
 const { userLogin } = require('../controller/userController/userLogin');
 const { userLogout } = require('../controller/userController/userLogout');
 const { newPassword } = require('../controller/userController/newPassword');
-const userRouter = express.Router()
+const { googleAuth } = require('../controller/authController/googleAuth.Conttoller');
+const userRouter = express.Router();
 
-userRouter.post('/refresh', generateRefreshToken)
+userRouter.post('/refresh', generateRefreshToken);
 
-userRouter.post('/auth/signup', validateRegistration, userRegistration)
-userRouter.post('/auth/signin', validateLoginBody, userLogin)
-userRouter.post('/auth/logout', autheriseduser, userLogout)
-userRouter.post('/auth/forgotpassword', validatingForgotPassword, sendOTPforgotPass)
-userRouter.post('/auth/verifyOTP', validatingForgotPassword, verifyOTP)
+userRouter.post('/auth/signup', validateRegistration, userRegistration);
+userRouter.post('/auth/signin', validateLoginBody, userLogin);
+userRouter.post('/auth/logout', autheriseduser, userLogout);
+userRouter.post('/auth/forgotpassword', validatingForgotPassword, sendOTPforgotPass);
+userRouter.post('/auth/verifyOTP', validatingForgotPassword, verifyOTP);
 userRouter.post('/auth/newpassword', autherisedOTP, newPassword);
-
+userRouter.post('/auth/googleAuth',googleAuth)
 
 module.exports = userRouter

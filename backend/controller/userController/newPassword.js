@@ -1,5 +1,5 @@
 const User = require("../../model/user");
-const { hashPassword } = require("../../utils/hash");
+const { hashPassword, comparePassword } = require("../../utils/hash");
 
 exports.newPassword = async (req, res) => {
     try {
@@ -29,23 +29,24 @@ exports.newPassword = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
-        
+        const isSamePassword = await comparePassword(password, targetUser.password);
+        if (isSamePassword) {
+            return res.status(404).json({
+                success: false,
+                message: "New password should not be same as of previous one"
+            });
+        }
+
         // 4️⃣ Update password
         const result = await User.updateOne(
             { email },
             { $set: { password: hashedPassword } }
         );
 
-        // if (result.modifiedCount === 0) {
-        //     return res.status(500).json({
-        //         success: false,
-        //         message: "Failed to update password"
-        //     });
-        // }
-
         return res.json({
             success: true,
-            message: "Password updated successfully"
+            message: "Password updated successfully",
+            result
         });
 
     } catch (error) {

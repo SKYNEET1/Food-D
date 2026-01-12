@@ -4,6 +4,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom"
 import axios from "axios";
 import { serverURL } from '../App';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../../utils/firebase';
 const Signup = () => {
   const primaryColor = "#ff4d2d";
   const bgColor = "#fff9f6";
@@ -22,6 +24,7 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
+
       console.log(userName, email, password, phoneNo, category)
       const result = await axios.post(`${serverURL}/api/auth/signup`, {
         userName,
@@ -31,13 +34,41 @@ const Signup = () => {
         category,
         confirmPassword
       }, { withCredentials: true, });
-      console.log(result)
+      console.log(result);
+
     } catch (error) {
+
       if (error.response?.data?.errors) {
         alert(error.response.data.errors.join("\n"));
       } else {
-        alert("Signup failed: " + error.message);
+        console.log("Signup failed : " + error.message);
       }
+
+    }
+  }
+
+  const handelGoogleAuth = async () => {
+    try {
+
+      if (!phoneNo || !category) {
+        return alert("Please enter phone number and select category");
+      }
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+      const data = await axios.post(`${serverURL}/api/auth/googleAuth`, {
+        // userName: result.user.displayName,
+        // email: result.user.email,
+        token,
+        phoneNo,
+        category,
+      }, { withCredentials: true, });
+      console.log(data);
+
+    } catch (error) {
+
+      console.log('googleAuth error : ', error.message);
+
     }
   }
   return (
@@ -48,7 +79,7 @@ const Signup = () => {
         style={{ border: `1px solid ${borderColor}` }}
       >
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
-          SkyFood
+          Buddy Bites
         </h1>
         <p className="text-gray-600 mb-8">
           Create your account to get started with delicious food deliveries
@@ -181,10 +212,14 @@ const Signup = () => {
             Sign Up
           </button>
 
-          <button className="w-full flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100">
+          <button onClick={handelGoogleAuth} className="w-full flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100">
             <FcGoogle size={20} />
             <span>Sign up with Google</span>
           </button>
+          {(!phoneNo || !category) && (
+            <p className="text-xs text-gray-500 text-center">
+              To continue with Google, please enter your phone number and choose a category !
+            </p>)}
         </div>
 
         <p className="text-center mt-3 text-gray-700">
@@ -204,4 +239,4 @@ const Signup = () => {
   );
 }
 
-export default Signup
+export default Signup;

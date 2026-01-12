@@ -1,9 +1,12 @@
+import axios from 'axios';
 import React, { useState } from 'react'
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
+import { serverURL } from '../App';
+
 
 const ForgotPassword = () => {
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
     const [OTP, setOTP] = useState("");
     const [password, setPassword] = useState("");
@@ -12,6 +15,65 @@ const ForgotPassword = () => {
     const primaryColor = "#ff4d2d";
     const navigate = useNavigate();
 
+    const handleSendOTP = async (userEmail) => {
+        try {
+
+            const result = await axios.post(
+                `${serverURL}/api/auth/forgotpassword`,
+                { email: userEmail },
+                { withCredentials: true, }
+            )
+            console.log(result);
+            setStep(2);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    }
+
+    const verifyOTP = async (otp, userMail) => {
+        try {
+
+            const result = await axios.post(
+                `${serverURL}/api/auth/verifyOTP`,
+                { otp,email: userMail },
+                { withCredentials: true, }
+            )
+            console.log(result);
+            setStep(3);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+    }
+
+    const setNewPassword = async (password, newPassword) => {
+        try {
+
+            if (password !== newPassword) {
+                alert('');
+                return null;
+            }
+            const result = await axios.post(
+                `${serverURL}/api/auth/newpassword`,
+                { password },
+                { withCredentials: true, }
+            )
+            console.log(result);
+            navigate("/signin");
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    }
 
     return (
         <div className='flex w-full items-center justify-center min-h-screen p-4 bg-[#fff9f6]'>
@@ -46,7 +108,8 @@ const ForgotPassword = () => {
                             style={{
                                 backgroundColor: primaryColor,
                             }}
-                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90"
+                            onClick={() => handleSendOTP(email)}
+                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90 cursor-pointer"
                         >
                             Send OTP
                         </button>
@@ -76,7 +139,8 @@ const ForgotPassword = () => {
                             style={{
                                 backgroundColor: primaryColor,
                             }}
-                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90"
+                            onClick={() => verifyOTP(OTP, email)}
+                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90 cursor-pointer"
                         >
                             Verify
                         </button>
@@ -86,7 +150,7 @@ const ForgotPassword = () => {
                 {step === 3 && (
                     <div>
 
-                        {/* confirm password */}
+                        {/* set new password */}
 
                         <div className='mb-4'>
                             <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>
@@ -107,9 +171,9 @@ const ForgotPassword = () => {
                             </label>
                             <input
                                 id='confirm password'
-                                type="confirm password"
+                                type="password"
                                 className='w-full border rounded border-gray-200-lg px-3 py-2 focus:outline-none'
-                                placeholder=' password'
+                                placeholder='password'
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 value={confirmPassword}
                             />
@@ -119,7 +183,8 @@ const ForgotPassword = () => {
                             style={{
                                 backgroundColor: primaryColor,
                             }}
-                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90"
+                            onClick={() => setNewPassword(password, confirmPassword)}
+                            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90 cursor-pointer"
                         >
                             Reset
                         </button>
