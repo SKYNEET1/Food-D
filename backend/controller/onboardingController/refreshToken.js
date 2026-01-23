@@ -8,6 +8,7 @@ exports.refreshToken = async (req, res) => {
         const refreshToken = req.cookies?.refresh;
         if (!refreshToken) {
             return res.status(401).json({
+                success: false,
                 message: "No refresh token provided"
             });
         }
@@ -17,14 +18,15 @@ exports.refreshToken = async (req, res) => {
             payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
         } catch (error) {
             return res.status(401).json({
-                message: "Invalid or expired refresh token",
-                error:error.message
+                success: false,
+                message: error.message || "Invalid or expired refresh token",
             });
         }
         const { phoneNo } = payload
 
         if (!phoneNo) {
             return res.status(401).json({
+                success: false,
                 message: "phoneNo is absent in refresh token"
             });
         }
@@ -32,12 +34,16 @@ exports.refreshToken = async (req, res) => {
         const user = await user.findOne({ phoneNo });
         if (!user) {
             return res.status(400).json({
+                success: false,
                 message: "Invalid refresh token or user is not logged in"
             });
         }
 
         if (user.refreshToken !== refreshToken) {
-            return res.status(403).json({ message: "Refresh token does not match DB record" });
+            return res.status(403).json({
+                success: false,
+                message: "Refresh token does not match DB record"
+            });
         }
 
 
@@ -46,10 +52,11 @@ exports.refreshToken = async (req, res) => {
 
         if (!newAccessToken || !newRefreshToken) {
             return res.status(400).json({
+                success:false,
                 message: "Not able to regenerate the newAccessToken or newRefreshToken"
             });
         }
-        
+
         try {
 
             user.refreshToken = newRefreshToken;
@@ -72,8 +79,8 @@ exports.refreshToken = async (req, res) => {
         } catch (error) {
 
             return res.status(500).json({
-                message: "Server error in saveing new refresh token in DB",
-                error:error.message
+                success:false,
+                message: error.message || "Server error in saveing new refresh token in DB",
             });
 
         }
@@ -85,8 +92,8 @@ exports.refreshToken = async (req, res) => {
     } catch (error) {
 
         return res.status(500).json({
-            message: "Server error",
-            error: error.message
+            success:false,
+            message: error.message || "Server error", 
         });
 
     }

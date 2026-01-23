@@ -7,7 +7,10 @@ exports.googleAuth = async (req, res) => {
     const { token, phoneNo, category } = req.body;
 
     if (!token) {
-      return res.status(400).json({ message: "Token missing" });
+      return res.status(400).json({
+        success: false,
+        message: "Token missing",
+      });
     }
 
     // ✅ Verify Firebase ID token
@@ -24,9 +27,14 @@ exports.googleAuth = async (req, res) => {
         phoneNo,
         category,
       });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'User already registered'
+      })
     }
 
-    const jwtToken = generateAccessToken(user._id);
+    const jwtToken = generateAccessToken(user.email, user.category, user._id);
 
     res.cookie("token", jwtToken, {
       httpOnly: true,
@@ -43,6 +51,7 @@ exports.googleAuth = async (req, res) => {
   } catch (error) {
     console.error("Google auth error:", error);
     res.status(500).json({
+      success: false,
       message: "Error logging in through Google",
       error: error.message,
     });

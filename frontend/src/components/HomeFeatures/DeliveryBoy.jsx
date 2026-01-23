@@ -8,4 +8,4 @@ function DeliveryBoy() {
   )
 }
 
-export default DeliveryBoy
+export default DeliveryBoy;

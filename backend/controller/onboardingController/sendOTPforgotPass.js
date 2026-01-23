@@ -80,8 +80,8 @@ exports.sendOTPforgotPass = async (req, res) => {
 
         console.print("ERROR", "OTP Sending", `Error in OTP sending => ${error}`, __filename)
         return res.status(500).json({
-            message: "Error in sending otp",
-            error: error.message
+            success: false,
+            message: error.message || "Error in sending otp", 
         })
     }
 

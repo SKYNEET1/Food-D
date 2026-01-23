@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
         enum: ["consumer", "restaurant", "deliveryagent", "admin"],
         required: true
     }
-}, { timestamps: true })
+}, { timestamps: true });
 
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);
 

@@ -6,6 +6,9 @@ import axios from "axios";
 import { serverURL } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
+import { ClipLoader } from 'react-spinners'
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 const Signup = () => {
   const primaryColor = "#ff4d2d";
   const bgColor = "#fff9f6";
@@ -19,13 +22,17 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch()
   const navigate = useNavigate();
 
   const handleSignup = async () => {
+    setLoading(true);
     try {
 
-      console.log(userName, email, password, phoneNo, category)
+      console.log(userName, email, password, phoneNo, category, confirmPassword);
       const result = await axios.post(`${serverURL}/api/auth/signup`, {
         userName,
         email,
@@ -34,16 +41,14 @@ const Signup = () => {
         category,
         confirmPassword
       }, { withCredentials: true, });
-      console.log(result);
-
+      dispatch(setUserData(result.data.data));
+      setError("");
+      setLoading(false);
     } catch (error) {
 
-      if (error.response?.data?.errors) {
-        alert(error.response.data.errors.join("\n"));
-      } else {
-        console.log("Signup failed : " + error.message);
-      }
-
+      console.log("Signup failed : " + error.message);
+      setError(error.response?.data?.message || "Signup failed");
+      setLoading(false);
     }
   }
 
@@ -51,23 +56,24 @@ const Signup = () => {
     try {
 
       if (!phoneNo || !category) {
-        return alert("Please enter phone number and select category");
+        return setError("Mobile No and Category is required");
+
       }
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
-      const data = await axios.post(`${serverURL}/api/auth/googleAuth`, {
-        // userName: result.user.displayName,
-        // email: result.user.email,
+      const { data } = await axios.post(`${serverURL}/api/auth/googleAuth`, {
         token,
         phoneNo,
         category,
       }, { withCredentials: true, });
-      console.log(data);
-
+      dispatch(setUserData(data));
+      setError("")
     } catch (error) {
 
-      console.log('googleAuth error : ', error.message);
+      console.log('googleAuth error  ', error.message, error);
+      setError(error.response?.data?.message || error.message);
+      setLoading(false);
 
     }
   }
@@ -99,6 +105,7 @@ const Signup = () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setuserName(e.target.value)}
             value={userName}
+            required
           />
         </div>
 
@@ -116,23 +123,25 @@ const Signup = () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setEmail(e.target.value)}
             value={email}
+            required
           />
         </div>
 
         {/* mobile */}
 
         <div className='mb-4'>
-          <label htmlFor="phoneNo" className='block text-gray-700 font-medium mb-1'>
+          <label htmlFor="tel" className='block text-gray-700 font-medium mb-1'>
             Mobile
           </label>
           <input
             id='phoneNo'
-            type="number"
+            type="numeric"
             className='w-full border rounded-lg px-3 py-2 focus:outline-none'
             placeholder='Enter your mobile number'
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setPhoneNo(e.target.value)}
             value={phoneNo}
+            required
           />
         </div>
 
@@ -151,6 +160,7 @@ const Signup = () => {
               style={{ border: `1px solid ${borderColor}` }}
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
             <button className='absolute right-3 top-2.5 text-gray-500 cursor-pointer ' onClick={() => setShowPassword(prev => !prev)}>{!showPassword ? <FaEye /> : <FaEyeSlash />}</button>
           </div>
@@ -171,6 +181,7 @@ const Signup = () => {
               style={{ border: `1px solid ${borderColor}` }}
               onChange={(e) => setConfirmPassword(e.target.value)}
               value={confirmPassword}
+              required
             />
             <button className='absolute right-3 top-2.5 text-gray-500 cursor-pointer ' onClick={() => setshowConfirmPassword(prev => !prev)}>{!showConfirmPassword ? <FaEye /> : <FaEyeSlash />}</button>
           </div>
@@ -207,16 +218,17 @@ const Signup = () => {
             style={{
               backgroundColor: primaryColor,
             }}
-            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90"
+            className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90 cursor-pointer"
+            disabled={loading}
           >
-            Sign Up
+            {loading ? <ClipLoader size={20} color='white' /> : "Sign Up"}
           </button>
 
           <button onClick={handelGoogleAuth} className="w-full flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100">
             <FcGoogle size={20} />
             <span>Sign up with Google</span>
           </button>
-          {(!phoneNo || !category) && (
+          {error ? <p className='text-red-500 text-center'>{`* ${error}`}</p> : (!phoneNo || !category) && (
             <p className="text-xs text-gray-500 text-center">
               To continue with Google, please enter your phone number and choose a category !
             </p>)}

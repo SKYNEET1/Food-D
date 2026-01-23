@@ -15,11 +15,14 @@ exports.autheriseduser = async (req, res, next) => {
     }
 
     try {
-        const decode = jwt.verify(token, process.env.JWT_KEY)
-        req.user = decode
+        
+        const decode = jwt.verify(token, process.env.JWT_KEY);
+        req.user = decode;
         next();
+
     } catch (error) {
-        console.log(error)
+
+        console.log(error);
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
                 success: false,
@@ -32,6 +35,7 @@ exports.autheriseduser = async (req, res, next) => {
             message: 'Invalid token',
             error: error.message
         });
+
     }
 }
 

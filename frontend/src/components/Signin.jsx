@@ -4,6 +4,12 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom"
 import axios from "axios";
 import { serverURL } from '../App';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../../utils/firebase';
+import { ClipLoader } from 'react-spinners';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
+
 
 const Signin = () => {
   const primaryColor = "#ff4d2d";
@@ -15,25 +21,56 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async () => {
+  const dispatch = useDispatch();
+
+  const handleSignin = async () => {
+    setLoading(true);
     try {
-      console.log(email, password, phoneNo)
+
+      console.log(email, password, phoneNo);
       const result = await axios.post(`${serverURL}/api/auth/signin`, {
         email,
         password,
         phoneNo,
       }, { withCredentials: true, });
-      console.log(result)
+      console.log('Signin result >>>',result);
+      dispatch(setUserData(result.data));
+      setError("");
+      setLoading(false);
+
     } catch (error) {
-      if (error.response?.data?.errors) {
-        alert(error.response.data.errors.join("\n"));
-      } else {
-        alert("Signin failed: " + error.message);
-      }
+
+      setError(error.response?.data?.message);
+      setLoading(false);
+
     }
   }
 
+  const handelGoogleAuth = async () => {
+    setLoading(true);
+    try {
+
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+      const {data} = await axios.post(`${serverURL}/api/auth/googleSignin`, {
+        token
+      }, { withCredentials: true, });
+      dispatch(setUserData(data));
+      setError("");
+      setLoading(false);
+
+    } catch (error) {
+
+      console.log('googleAuth error : ', error);
+      setError(error.response?.data?.message);
+      setLoading(false);
+
+    }
+  }
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ backgroundColor: bgColor }}>
 
@@ -62,13 +99,14 @@ const Signin = () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setEmail(e.target.value)}
             value={email}
+            required
           />
         </div>
 
         {/* mobile */}
 
         <div className='mb-4'>
-          <label htmlFor="phoneNo" className='block text-gray-700 font-medium mb-1'>
+          <label htmlFor="tel" className='block text-gray-700 font-medium mb-1'>
             Mobile
           </label>
           <input
@@ -79,6 +117,7 @@ const Signin = () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setPhoneNo(e.target.value)}
             value={phoneNo}
+            required
           />
         </div>
 
@@ -97,6 +136,7 @@ const Signin = () => {
               style={{ border: `1px solid ${borderColor}` }}
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
             <button className='absolute right-3 top-2.5 text-gray-500 cursor-pointer ' onClick={() => setShowPassword(prev => !prev)}>{!showPassword ? <FaEye /> : <FaEyeSlash />}</button>
           </div>
@@ -112,16 +152,18 @@ const Signin = () => {
 
         <div className="space-y-3">
           <button
-            onClick={handleSignup}
+            onClick={handleSignin}
             style={{
               backgroundColor: primaryColor,
             }}
             className="w-full font-semibold py-2 rounded-lg text-white transition duration-200 hover:opacity-90"
           >
-            Sign in
+            {loading ? <ClipLoader size={20} color='white' /> : "Sign In"}
           </button>
 
-          <button className="w-full flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100">
+          {error && <p className='text-red-500 text-center'>{`* ${error}`}</p>}
+
+          <button onClick={handelGoogleAuth} className="w-full flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100">
             <FcGoogle size={20} />
             <span>Sign in with Google</span>
           </button>
@@ -142,4 +184,4 @@ const Signin = () => {
   );
 }
 
-export default Signin
+export default Signin;

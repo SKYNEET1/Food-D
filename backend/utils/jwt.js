@@ -1,24 +1,24 @@
 const jwt = require('jsonwebtoken');
 
-const generateAccessToken = (phoneNo, category, _id) => {
+const generateAccessToken = (email, category, _id) => {
     return jwt.sign(
-        { phoneNo, category, _id },
+        { email, category, _id },
         process.env.JWT_KEY,
         { expiresIn: '2h' }
     )
 }
 
-const generateOTPToken = (email,otp) => {
+const generateOTPToken = (email, otp) => {
     return jwt.sign(
-        {email, otp},
+        { email, otp },
         process.env.OTP_TOKEN,
-        {expiresIn: '1h'}
+        { expiresIn: '1h' }
     )
 }
 
-const generateRefreshToken = (phoneNo,_id) => {
+const generateRefreshToken = (email, _id) => {
     return jwt.sign(
-        { phoneNo, _id },
+        { email, _id },
         process.env.JWT_REFRESH_KEY,
         { expiresIn: '7d' }
     )

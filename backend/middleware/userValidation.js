@@ -9,6 +9,7 @@ const validateRegistration = async (req, res, next) => {
             "any.required": "User name is mandatory"
         }),
         phoneNo: joi.string().required().messages({
+            "string.empty": "Phone number can not be empty",
             "string.base": "Phone number must be a 10-digit number",
             "any.required": "Phone number is required"
         }),
@@ -41,7 +42,7 @@ const validateRegistration = async (req, res, next) => {
     if (error) {
         return res.status(400).json({
             success: false,
-            errors: error.details.map((d) => d.message)
+            message: error.details.map(d => d.message).join(", ")
         });
     }
 
@@ -66,6 +67,7 @@ const validateLoginBody = async (req, res, next) => {
                 "any.required": "password is mandatory"
             }),
             phoneNo: joi.string().required().messages({
+                "string.empty": "Phone number can not be empty",
                 "string.base": "Phone number must be string",
                 "any.required": "Phone number is required"
             })
@@ -78,7 +80,7 @@ const validateLoginBody = async (req, res, next) => {
         if (error) {
             return res.status(400).json({
                 success: false,
-                errors: error.details.map((d) => d.message)
+                message: error.details.map(d => d.message).join(", ")
             });
         }
 
@@ -114,7 +116,7 @@ const validatingForgotPassword = async (req, res, next) => {
         if (error) {
             return res.status(400).json({
                 success: false,
-                errors: error.details.map((d) => d.message)
+                message: error.details.map(d => d.message).join(", ")
             });
         }
 

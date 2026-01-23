@@ -1,12 +1,15 @@
-require('dotenv').config();
-require('../backend/helper/logger');
 const cors = require("cors");
+require('dotenv').config();
+require('./helper/logger');
 const express = require('express');
 const dbConnect = require('./config/MongoDatabase');
 const app = express();
 
 const cookieParser = require('cookie-parser');
-const userRouter = require('./route/userRoute');
+const onboardingRouter = require('./route/onboardingRoutes');
+const userRouter = require('./route/userRoutes');
+const shopRouter = require('./route/shopRoutes');
+const itemRouter = require("./route/itemRoutes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -16,12 +19,15 @@ app.use(cors({
     credentials: true
 }))
 
-app.use('/api', userRouter)
+app.use('/api', onboardingRouter);
+app.use('/api/user', userRouter);
+app.use('/api/shop', shopRouter);
+app.use('/api/item', itemRouter);
 
 app.get('/', (req, res) => {
     res.send('hi')
 })
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 (async () => {
 
