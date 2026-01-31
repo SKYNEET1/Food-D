@@ -5,14 +5,21 @@ import { FaUtensils } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import OwnerItemsCard from '../ItemComponent/OwnerItemsCard';
+import { DiLaravel } from 'react-icons/di';
+import Loading from '../Ui.shadecn/Loading';
 
 const OwnerDashbord = () => {
-  const { myShopData } = useSelector(state => state.owner);
-  console.log('ownerdashbord >>> ',myShopData?.data?.foodItems)
+  const { myShopData, loading } = useSelector(state => state.owner);
+  console.log('ownerdashbord >>> ',myShopData?.foodItems)
   console.log('inside owner dashbord shopdata >>.', myShopData)
   const navigate = useNavigate();
+
+    if (loading) {
+    return <Loading/>
+  }
+
   return (
-    <div className='w-full min-h-screen bg-[#fff9f6] flex flex-col items-center'>
+    <div className='w-full min-h-screen bg-[#fff9f6] flex flex-col items-center p-16'>
       <Navbar />
 
       {/* when shop is not present then this will show */}
@@ -48,18 +55,18 @@ const OwnerDashbord = () => {
             <div className='absolute top-4 right-4 bg-[#ff4d2d] text-white p-2 rounded-full shadow-md hover:bg-orange-600 transition-colors cursor-pointer' onClick={() => navigate('create-edit-Shop')}>
               <FaPen size={20} />
             </div>
-            <img src={myShopData?.data?.image} alt={myShopData?.data?.name} className='w-full h-48 sm:h-64 object-cover' />
+            <img src={myShopData?.image} alt={myShopData?.name} className='w-full h-48 sm:h-64 object-cover' />
             <div className="p-4 sm:p-6">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                {myShopData?.data?.name}
+                {myShopData?.name}
               </h1>
 
               <p className="text-gray-500">
-                {myShopData?.data?.city}, {myShopData?.data?.state}
+                {myShopData?.city}, {myShopData?.state}
               </p>
 
               <p className="text-gray-500 mb-4">
-                {myShopData?.data?.address}
+                {myShopData?.address}
               </p>
             </div>
 
@@ -67,7 +74,7 @@ const OwnerDashbord = () => {
 
           {
 
-            myShopData?.data?.foodItems.length === 0 &&
+            myShopData?.foodItems?.length === 0 &&
             <div className='flex justify-center items-center p-4 sm:p-6'>
               <div className='w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300'>
                 <div className='flex flex-col items-center text-center'>
@@ -87,11 +94,11 @@ const OwnerDashbord = () => {
 
           {
 
-            myShopData?.data?.foodItems.length > 0 &&
+            myShopData?.foodItems?.length > 0 &&
             <div className='flex flex-col items-center gap-4 w-full max-w-3xl'>
               {
               
-              myShopData.data.foodItems.map((item,index) => (
+              myShopData?.foodItems?.map((item,index) => (
                 <OwnerItemsCard data={item} key={index}/>
               ))
 

@@ -10,12 +10,14 @@ exports.getShop = async (req, res) => {
 
         const isShop = await shop.findOne({ owner: _id }).populate({
             path: "foodItems",
-            select: "name price image category foodType"
+            select: "name price image category foodType",
+            options: { sort: { updatedAt: -1 } }
         });
         if (!isShop) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
-                message: `${email}, owner dont have any shop.`
+                message: `${email}, owner dont have any shop.`,
+                data: null
             })
         }
 

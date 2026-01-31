@@ -44,7 +44,7 @@ exports.createAndUpdateShop = async (req, res) => {
             { owner: _id, ownerEmail: email },
             { $set: updateData },
             { upsert: true, new: true }
-        ).populate("owner foodItem");
+        ).populate("owner foodItems");
 
         return res.status(200).json({
             success: true,

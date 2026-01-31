@@ -47,8 +47,7 @@ const validateRegistration = async (req, res, next) => {
     }
 
 
-    const { ...sanitizeValue } = value;
-    req.body = sanitizeValue;
+    req.body = value;
     next();
 
 }

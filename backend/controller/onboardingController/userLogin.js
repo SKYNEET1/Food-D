@@ -7,7 +7,7 @@ exports.userLogin = async (req, res) => {
 
         const { phoneNo, password, email } = req.body;
 
-        const isUser = await user.findOne({ $or: [{ phoneNo }, { email }] })
+        const isUser = await user.findOne({ $and: [{ phoneNo }, { email }] })
         if (!isUser) {
             return res.status(400).json({
                 success: false,
@@ -56,6 +56,7 @@ exports.userLogin = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: `${isUser.email} login successful`,
+            data:isUser
         });
 
 

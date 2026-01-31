@@ -12,13 +12,6 @@ exports.getTargetItem = async (req, res) => {
       });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(itemId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid item id"
-      });
-    }
-
     const item = await Item.findById(itemId).lean();
 
     if (!item) {

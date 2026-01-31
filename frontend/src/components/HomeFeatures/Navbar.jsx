@@ -8,6 +8,7 @@ import { serverURL } from '../../App';
 import { setUserData } from '../../redux/userSlice';
 import axios from 'axios';
 import { TbReceipt2 } from 'react-icons/tb';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
     const [showInfo, setShowInfo] = useState(false);
@@ -15,7 +16,9 @@ const Navbar = () => {
     const { userData, currentCity } = useSelector(store => store.user);
     const { myShopData } = useSelector(store => store.owner);
     console.log('navbar', userData);
+
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
@@ -96,17 +99,17 @@ overflow-visible'>
                     userData?.data?.category == "restaurant" ?
                         <>
                             {
-                                
-                            myShopData && 
-                            <>
-                                <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]'>
-                                    <FaPlus size={20} />
-                                    <span>Add Food Item</span>
-                                </button>
-                                <button className='md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]'>
-                                    <FaPlus size={20} />
-                                </button>
-                            </>
+
+                                myShopData &&
+                                <>
+                                    <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]' size={20} onClick={() => navigate('/addItem')}>
+                                        <FaPlus />
+                                        <span>Add Food Item</span>
+                                    </button>
+                                    <button className='md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]'>
+                                        <FaPlus size={20} onClick={() => navigate('/addItem')} />
+                                    </button>
+                                </>
 
                             }
 
@@ -122,7 +125,7 @@ overflow-visible'>
                             <div className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium'>
                                 <TbReceipt2 size={20} />
                                 <span className='absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px'>
-                                    0
+                                    0 
                                 </span>
                             </div>
 
@@ -148,14 +151,19 @@ overflow-visible'>
 
 
 
-                <div className='w-9 h-9 rounded-full sm:rounded-full flex items-center justify-center bg-[#ff4d2d]'>
-                    <p onClick={() => setShowInfo(prev => !prev)} className='text-white text-[30px] shadow-xl font-semibold cursor-pointer mb-2'>{userData?.data?.userName.slice(0, 1)}</p>
+                <div className='w-8 h-8 rounded-full sm:rounded-full flex items-center justify-center bg-[#ff4d2d]'>
+                    <p onClick={() => setShowInfo(prev => !prev)} className='text-white text-[25px] shadow-xl font-semibold cursor-pointer mb-2'>{userData?.data?.userName.slice(0, 1)}</p>
                 </div>
 
                 {
                     showInfo && <div className='fixed top-20 right-2.5 md:right-[10%] lg:right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-5 flex flex-col gap-2.5 z-9999'>
                         <div className='text-[17px] font-semibold'>{userData?.data?.userName}</div>
-                        <div className='md:hidden text-[#ff4d2d] font-semibold cursor-pointer'>My Orders</div>
+                        {
+
+                            userData?.data?.category === "user" && <div className='md:hidden text-[#ff4d2d] font-semibold cursor-pointer'>My Orders</div>
+
+                        }
+
                         <div className='text-[#ff4d2d] font-semibold cursor-pointer' onClick={handleLogout}>Log Out</div>
                     </div>
                 }

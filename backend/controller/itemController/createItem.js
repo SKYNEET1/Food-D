@@ -53,7 +53,8 @@ exports.createItem = async (req, res) => {
             ownerEmail: email
         }).populate({
             path: "foodItems",
-            select: "name price image category foodType"
+            select: "name price image category foodType",
+            options:{sort:{updatedAt:-1}}
         });
 
         console.log('populated >>>',updatedShop);

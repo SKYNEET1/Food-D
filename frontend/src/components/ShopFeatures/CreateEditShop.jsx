@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { serverURL } from '../../App';
 import { setMyShopData } from '../../redux/ownerSlice';
+import { ClipLoader } from 'react-spinners';
 
 const CreateEditShop = () => {
     const { myShopData } = useSelector(state => state.owner);
@@ -16,6 +17,7 @@ const CreateEditShop = () => {
     const [state, setState] = useState(myShopData?.state || currentState);
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
     const [backendImage, setBackendImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -41,8 +43,10 @@ const CreateEditShop = () => {
 
     const handelSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
+
             const formData = new FormData();
             formData.append("name", name);
             formData.append("city", city);
@@ -57,11 +61,16 @@ const CreateEditShop = () => {
                     withCredentials: true
                 }
             );
-            dispatch(setMyShopData(result.data.data));
+            setLoading(false);
+            dispatch(setMyShopData(result.data.data)); // here i sent only data so shopdata.field
             console.log(result.data);
-            navigate('/owner-dashbord');
+            navigate('/');
+
         } catch (error) {
-            console.log(error)
+
+            console.log(error);
+            setLoading(false);
+
         }
     }
 
@@ -127,7 +136,7 @@ const CreateEditShop = () => {
                         />
                     </div>
                     <button onClick={handelSubmit} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
-                        Save
+                        {loading ? <ClipLoader size={20} color='white'/> : "Save"}
                     </button>
 
                 </form>

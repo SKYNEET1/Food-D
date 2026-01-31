@@ -30,14 +30,13 @@ const Signin = () => {
     setLoading(true);
     try {
 
-      console.log(email, password, phoneNo);
       const result = await axios.post(`${serverURL}/api/auth/signin`, {
         email,
         password,
         phoneNo,
       }, { withCredentials: true, });
       console.log('Signin result >>>',result);
-      dispatch(setUserData(result.data));
+      dispatch(setUserData(result.data.data));
       setError("");
       setLoading(false);
 
@@ -59,7 +58,8 @@ const Signin = () => {
       const {data} = await axios.post(`${serverURL}/api/auth/googleSignin`, {
         token
       }, { withCredentials: true, });
-      dispatch(setUserData(data));
+      dispatch(setUserData(data.data));
+      console.log('googleAuth signin >>>',data.data)
       setError("");
       setLoading(false);
 

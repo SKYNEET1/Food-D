@@ -10,27 +10,30 @@ exports.editItem = async (req, res) => {
         const { name, category, foodType, price } = req.body;
         const { _id, email } = req.user;
 
-        if (!mongoose.Types.ObjectId.isValid(itemId)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid item id"
-            });
-        }
+        const updateData = {};
+
+        if (name) updateData.name = name;
+        if (category) updateData.category = category;
+        if (foodType) updateData.foodType = foodType;
+        if (price !== undefined) updateData.price = Number(price);
 
         const shopDoc = await shop.findOne({ owner: _id });
         if (!shopDoc) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
                 message: "Shop not found"
             });
         }
 
-        const updateData = {
-            name,
-            category,
-            foodType,
-            price: Number(price)
-        };
+        const item = await Item.findOne({ _id: itemId, shop: shopDoc._id });
+
+        if (!item) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not allowed to edit this item",
+            });
+        }
+
 
         if (req.file) {
             const image = await uploadOnCloudinary(req.file.path);
@@ -55,7 +58,11 @@ exports.editItem = async (req, res) => {
             { new: true }
         );
 
-        const shopItem = await shop.findOne({ owner: _id, foodItems: itemId }).populate('foodItems');
+        const shopItem = await shop.findOne({ owner: _id, foodItems: itemId })
+            .populate({
+                path: "foodItems",
+                options: { sort: { updatedAt: -1 } }
+            });
 
         return res.status(200).json({
             success: true,

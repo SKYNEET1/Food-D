@@ -17,32 +17,32 @@ const Itemchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        default:"others",
+        default: "others",
+        lowercase: true,
         enum: [
-            "Snacks",
-            "Main Course",
-            "Desserts",
-            "Pizza",
-            "Burgers",
-            "Sandwiches",
-            "South Indian",
-            "North Indian",
-            "Chinese",
-            "Fast Food",
-            "Others"
-        ],
-        required:true
+            "snacks",
+            "main course",
+            "desserts",
+            "pizza",
+            "burgers",
+            "sandwiches",
+            "south indian",
+            "north indian",
+            "chinese",
+            "fast food",
+            "others"
+        ]
     },
     price: {
         type: Number,
-        min:0,
-        default:0,
+        min: 0,
+        default: 0,
         required: true
     },
     foodType: {
         type: String,
-        default:"Veg",
-        enum:["Veg", "Non-Veg"],
+        default: "Veg",
+        enum: ["Veg", "Non-Veg"],
         required: true
     }
 }, { timestamps: true });

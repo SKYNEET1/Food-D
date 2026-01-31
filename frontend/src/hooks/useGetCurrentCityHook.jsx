@@ -9,6 +9,12 @@ const useGetCurrentcityHook = () => {
     const dispatch = useDispatch();
     const { userData } = useSelector(state => state.user);
     useEffect(() => {
+
+        if (!userData) {
+            console.log('UserData not found | Inside useGetCurrentCityHook >>>');
+            return;
+        };
+
         if (!navigator.geolocation) {
             console.log("Geolocation not supported");
             return;
