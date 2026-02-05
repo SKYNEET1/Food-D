@@ -11,14 +11,18 @@ const useGetCurrentUserHook = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
+
                 const result = await axios.get(`${serverURL}/api/user/currentUser`,
                     { withCredentials: true }
                 );
                 dispatch(setUserData(result.data));
-                console.log('u are in getcurrenthook', result);
+                console.log('u are in getcurrenthook =>>>> ', result);
+
             } catch (error) {
+
                 console.log(error);
                 dispatch(clearUserData());
+                
             }
         }
         fetchUser();

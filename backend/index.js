@@ -27,7 +27,7 @@ app.use('/api/item', itemRouter);
 app.get('/', (req, res) => {
     res.send('hi')
 })
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;  
 
 (async () => {
 

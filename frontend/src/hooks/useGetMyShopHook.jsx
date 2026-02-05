@@ -30,8 +30,7 @@ const useGetMyShopHook = () => {
 
             } catch (error) {
 
-                const message =
-                    error.response?.data?.message || "Something went wrong";
+                const message = error.response?.data?.message || "Something went wrong";
 
                 console.error(message);
 

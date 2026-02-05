@@ -136,3 +136,16 @@ module.exports = { validateRegistration, validateLoginBody, validatingForgotPass
 
 
 
+
+
+// if (error) {
+//     return res.status(400).json({
+//         success: false,
+//         source: "joi",
+//         type: "VALIDATION_ERROR",
+//         errors: error.details.map(d => ({
+//             field: d.path.join("."),
+//             message: d.message
+//         }))
+//     });
+// }

@@ -42,7 +42,6 @@ const Signin = () => {
 
     } catch (error) {
 
-      setError(error.response?.data?.message);
       setLoading(false);
 
     }

@@ -5,6 +5,6 @@ import ownerSlice from "./ownerSlice"
 export const store = configureStore({
     reducer: {
         user: userSlice,
-        owner: ownerSlice
+        owner: ownerSlice,
     }
 })

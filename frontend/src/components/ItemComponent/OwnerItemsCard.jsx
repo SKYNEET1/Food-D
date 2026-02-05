@@ -2,6 +2,7 @@ import { serverURL } from '@/App';
 import { setMyShopData } from '@/redux/ownerSlice';
 import axios from 'axios';
 import React from 'react'
+import toast from 'react-hot-toast';
 import { FaPen, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +19,8 @@ const OwnerItemsCard = ({ data }) => {
             const result = await axios.delete(`${serverURL}/api/item/deleteItem/${data._id}`, { withCredentials: true });
             dispatch(setMyShopData(result.data.data));
         } catch (error) {
-            console.log(error);
+            console.log(error)
+            toast.error('Failed to delete item. Please try again.')
         }
     }
 

@@ -7,20 +7,38 @@ import { useNavigate } from 'react-router-dom'
 import { serverURL } from '../../App';
 import { setMyShopData } from '../../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
+import toast from 'react-hot-toast';
+import showJoiErrorsSequentially from '@/helper/errorToast';
 
 const CreateEditShop = () => {
     const { myShopData } = useSelector(state => state.owner);
     const { currentCity, currentState, currentAddress } = useSelector(state => state.user);
-    const [name, setName] = useState(myShopData?.name || "")
-    const [address, setAddress] = useState(myShopData?.address || currentAddress)
-    const [city, setCity] = useState(myShopData?.city || currentCity);
-    const [state, setState] = useState(myShopData?.state || currentState);
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
     const [backendImage, setBackendImage] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (myShopData) {
+            setName(myShopData.name || "");
+            setAddress(myShopData.address || "");
+            setCity(myShopData.city || "");
+            setState(myShopData.state || "");
+            setFrontendImage(myShopData.image || null);
+        } else {
+            setAddress(currentAddress || "");
+            setCity(currentCity || "");
+            setState(currentState || "");
+        }
+    }, [myShopData, currentCity, currentState, currentAddress]);
+
 
     useEffect(() => {
         return () => {
@@ -45,6 +63,12 @@ const CreateEditShop = () => {
         e.preventDefault();
         setLoading(true);
 
+        if (!name || !city || !state || !address) {
+            alert("All fields are required");
+            setLoading(false);
+            return;
+        }
+
         try {
 
             const formData = new FormData();
@@ -68,8 +92,19 @@ const CreateEditShop = () => {
 
         } catch (error) {
 
-            console.log(error);
             setLoading(false);
+            const err = error.response?.data;
+
+            if (!err) {
+                console.error("Network / Unknown error", error);
+                return;
+            }
+
+            if (err.source === "joi") {
+                showJoiErrorsSequentially(err.errors);
+            } else {
+                toast.error(err.message)
+            }
 
         }
     }
@@ -91,7 +126,7 @@ const CreateEditShop = () => {
                     </div>
                 </div>
 
-                <form className='space-y-5' encType="multipart/form-data">
+                <form className='space-y-5' encType="multipart/form-data" onSubmit={handelSubmit}>
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>Name</label>
                         <input type="text" placeholder='Enter Shop Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500'
@@ -135,8 +170,10 @@ const CreateEditShop = () => {
                             value={address}
                         />
                     </div>
-                    <button onClick={handelSubmit} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
-                        {loading ? <ClipLoader size={20} color='white'/> : "Save"}
+
+                    {/* Submit button */}
+                    <button type='submit' className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
+                        {loading ? <ClipLoader size={20} color='white' /> : "Save"}
                     </button>
 
                 </form>

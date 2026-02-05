@@ -65,7 +65,12 @@ const validateCreateItem = async (req, res, next) => {
     if (error) {
         return res.status(400).json({
             success: false,
-            message: error.details.map(d => d.message).join(", ")
+            source: "joi",
+            type: "VALIDATION_ERROR",
+            errors: error.details.map(d => ({
+                field: d.path.join("."),
+                message: d.message
+            }))
         });
     }
 
@@ -135,7 +140,12 @@ const validateEditItem = async (req, res, next) => {
     if (error) {
         return res.status(400).json({
             success: false,
-            message: error.details.map(d => d.message).join(", ")
+            source: "joi",
+            type: "VALIDATION_ERROR",
+            errors: error.details.map(d => ({
+                field: d.path.join("."),
+                message: d.message
+            }))
         });
     }
 

@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { serverURL } from '../../App';
 import { setMyShopData } from '../../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
+import toast from 'react-hot-toast';
+import showJoiErrorsSequentially from '@/helper/errorToast';
 
 const EditItem = () => {
 
@@ -77,12 +79,24 @@ const EditItem = () => {
             dispatch(setMyShopData(result?.data?.data));
             setLoading(false)
             console.log('Checking for shop and items in additem ', result.data.data);
-            navigate('/');
+
+            navigate("/", { replace: true });
 
         } catch (error) {
 
-            console.log(error);
-            setLoading(false)
+            setLoading(false);
+            const err = error.response?.data;
+
+            if (!err) {
+                console.error("Network / Unknown error", error);
+                return;
+            }
+
+            if (err.source === "joi") {
+                showJoiErrorsSequentially(err.errors);
+            } else {
+                toast.error(err.message)
+            }
 
         }
     }
@@ -92,6 +106,7 @@ const EditItem = () => {
 
         const handelGetItemById = async () => {
             try {
+                setLoading(true);
                 const result = await axios.get(`${serverURL}/api/item/getTargetItem/${itemId}`,
                     {
                         withCredentials: true,
@@ -101,10 +116,23 @@ const EditItem = () => {
                     }
                 );
                 setCurrentItem(result.data.data);
+                setLoading(false);
                 console.log('to find out edit item api >>>>', result.data.data);
             }
             catch (error) {
-                console.log('You are in edit Item >>> ', error)
+                setLoading(false);
+                const err = error.response?.data;
+
+                if (!err) {
+                    console.error("Network / Unknown error", error);
+                    return;
+                }
+
+                if (err.source === "joi") {
+                    showJoiErrorsSequentially(err.errors);
+                } else {
+                    toast.error(err.message)
+                }
             }
         }
 
@@ -141,7 +169,7 @@ const EditItem = () => {
                     </div>
                 </div>
 
-                <form className='space-y-5'>
+                <form className='space-y-5' onSubmit={handelSubmit}>
                     {/* name */}
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>Food Name</label>
@@ -201,8 +229,8 @@ const EditItem = () => {
 
                         </select>
                     </div>
-                    <button onClick={handelSubmit} disabled={loading} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
-                        {loading ? <ClipLoader size={20} color='white'/> : "Save"}
+                    <button type='submit' disabled={loading} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
+                        {loading ? <ClipLoader size={20} color='white' /> : "Save"}
                     </button>
 
                 </form>

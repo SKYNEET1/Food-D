@@ -12,32 +12,52 @@ import useGetMyShopHook from './hooks/useGetMyShopHook'
 import CreateEditShop from './components/ShopFeatures/CreateEditShop'
 import AddItem from './components/ItemComponent/AddItem'
 import EditItem from './components/ItemComponent/EditItem'
-import  Loading  from './components/Ui.shadecn/Loading'
-export const serverURL = "http://localhost:4000"
+import Loading from './components/Ui.shadecn/Loading'
+import { Toaster } from 'react-hot-toast'
+import useGetAllShopByCity from './hooks/useGetAllShopByCity'
+export const serverURL = "http://localhost:8085"
 
 function App() {
   useGetCurrentUserHook();
   useGetCurrentcityHook();
   useGetMyShopHook();
-  const { userData, loading } = useSelector(state => state.user);
+  useGetAllShopByCity();
 
-  if (loading) {
-    return <Loading />;
-  }
+  const { userData, loading } = useSelector(state => state.user);
 
   // const { myShopData } = useSelector(state => state.owner);
   console.log('app.js userdata', userData);
   return (
-    <Routes>
-      <Route path='/' element={userData ? <Home /> : <Signin />} />
-      <Route path='/signup' element={userData ? <Navigate to={"/"} /> : <Signup />} />
-      <Route path='/signin' element={userData ? <Navigate to={"/"} /> : <Signin />} />
-      <Route path='/forgot-password' element={userData ? <Navigate to={"/"} /> : <ForgotPassword />} />
-      <Route path='/owner-dashbord' element={<OwnerDashbord />} />
-      <Route path='/create-edit-Shop' element={<CreateEditShop />} />
-      <Route path='/addItem' element={<AddItem />} />
-      <Route path='/edit-item/:itemId' element={<EditItem />} />
-    </Routes>
+    <>
+
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
+
+      <>
+        {loading && <Loading />}
+        <Routes>
+          <Route path='/' element={userData ? <Home /> : <Signin />} />
+          <Route path='/signup' element={userData ? <Navigate to="/" /> : <Signup />} />
+          <Route path='/signin' element={userData ? <Navigate to="/" /> : <Signin />} />
+          <Route path='/forgot-password' element={userData ? <Navigate to="/" /> : <ForgotPassword />} />
+          <Route path='/owner-dashbord' element={<OwnerDashbord />} />
+          <Route path='/create-edit-Shop' element={<CreateEditShop />} />
+          <Route path='/addItem' element={<AddItem />} />
+          <Route path='/edit-item/:itemId' element={<EditItem />} />
+        </Routes>
+      </>
+
+
+    </>
   )
 }
 

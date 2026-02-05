@@ -4,13 +4,14 @@ const { isrestaurant } = require('../middleware/isAutherised');
 const { createAndUpdateShop } = require('../controller/shopController/createAndUpdateShop');
 const uploadFile = require('../middleware/multer');
 const { getShop } = require('../controller/shopController/getShop');
-const { validateCreateShop } = require('../middleware/shopValidation');
+const { validateCreateShop, validateCityParam } = require('../middleware/shopValidation');
 const shopRouter = express.Router();
 
 shopRouter.post(
     '/createAndUpdateShop',
     autheriseduser,
     isrestaurant,
+    validateCreateShop,
     (req, res, next) => {
         console.log("Before multer");
         next();
@@ -20,7 +21,6 @@ shopRouter.post(
         console.log("After multer", req.file);
         next();
     },
-    validateCreateShop,
     createAndUpdateShop
 );
 

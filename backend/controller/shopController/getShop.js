@@ -12,7 +12,7 @@ exports.getShop = async (req, res) => {
             path: "foodItems",
             select: "name price image category foodType",
             options: { sort: { updatedAt: -1 } }
-        });
+        }).lean();
         if (!isShop) {
             return res.status(200).json({
                 success: false,

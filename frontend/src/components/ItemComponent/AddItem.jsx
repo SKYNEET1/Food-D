@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import { serverURL } from '../../App';
 import { setMyShopData } from '../../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
+import toast from 'react-hot-toast';
+import showJoiErrorsSequentially from '@/helper/errorToast';
 
 const AddItem = () => {
     const { myShopData } = useSelector(state => state.owner);
@@ -32,8 +34,9 @@ const AddItem = () => {
         "Fast Food",
         "Others"
     ];
-    const [category, setCategory] = useState("");
-    const [foodType, setFoodType] = useState("Veg")
+    const [category, setCategory] = useState("Others");
+    const [foodType, setFoodType] = useState("Veg");
+    const [error, setError] = useState("");
 
     useEffect(() => {
         return () => {
@@ -59,6 +62,7 @@ const AddItem = () => {
         setLoading(true);
 
         try {
+
             const formData = new FormData();
             formData.append("name", name);
             formData.append("foodType", foodType);
@@ -75,11 +79,26 @@ const AddItem = () => {
             );
             dispatch(setMyShopData(result?.data?.data));
             setLoading(false);
-            console.log('Checking for shop and items in additem ',result.data.data);
-            navigate('/owner-dashbord');
+            console.log('Checking for shop and items in additem ', result.data.data);
+            navigate('/');
+
         } catch (error) {
+
             setLoading(false);
-            console.log(error);
+            setError(error.response?.data?.message);
+            const err = error.response?.data;
+
+            if (!err) {
+                console.error("Network / Unknown error", error);
+                return;
+            }
+
+            if (err.source === "joi") {
+                showJoiErrorsSequentially(err.errors);
+            } else {
+                toast.error(err.message)
+            }
+
         }
     }
 
@@ -161,7 +180,7 @@ const AddItem = () => {
                         </select>
                     </div>
                     <button onClick={handelSubmit} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200'>
-                        {loading ? <ClipLoader size={20} color='white'/> : "Save"}
+                        {loading ? <ClipLoader size={20} color='white' /> : "Save"}
                     </button>
 
                 </form>
