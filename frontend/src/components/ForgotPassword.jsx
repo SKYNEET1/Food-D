@@ -104,7 +104,7 @@ const ForgotPassword = () => {
 
                 <div className='flex items-center gap-4 mb-4'>
                     <IoIosArrowRoundBack size={30} className='text-[#ff4d2d] cursor-pointer' onClick={() => navigate("/signin")} />
-                    <h1 className='text-2xl font-bold text-center text-[#ff4d2d]'>Forgot Password</h1>
+                    <h2 className='text-2xl font-bold text-center text-[#ff4d2d]'>Forgot Password</h2>
                 </div>
 
                 {step === 1 && (

@@ -31,7 +31,7 @@ const validateCreateShop = (req, res, next) => {
 
 
 // Validate getAllShopByCity params
-const validateCityParam = (req, res, next) => {
+const validateCityIdParam = (req, res, next) => {
   const schema = Joi.object({
     city: Joi.string()
       .trim()
@@ -60,4 +60,4 @@ const validateCityParam = (req, res, next) => {
 };
 
 
-module.exports = { validateCreateShop, validateCityParam };
+module.exports = { validateCreateShop, validateCityIdParam };

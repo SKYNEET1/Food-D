@@ -48,8 +48,8 @@ const OwnerDashbord = () => {
 
         myShopData &&
         <div className='w-full flex flex-col items-center gap-6 px-4 sm:px-6'>
-          <h1 className='text-2xl sm:text-3xl text-gray-900 flex items-center gap-3 mt-8 text-center'><FaUtensils className='text-[#ff4d2d] w-14 h-14 ' />Welcome to {myShopData?.data?.name}
-          </h1>
+          <h2 className='text-2xl sm:text-3xl text-gray-900 flex items-center gap-3 mt-8 text-center'><FaUtensils className='text-[#ff4d2d] w-14 h-14 ' />Welcome to {myShopData?.data?.name}
+          </h2>
 
           <div className='bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all duration-300 w-full max-w-3xl relative'>
             <div className='absolute top-4 right-4 bg-[#ff4d2d] text-white p-2 rounded-full shadow-md hover:bg-orange-600 transition-colors cursor-pointer' onClick={() => navigate('create-edit-Shop')}>
@@ -57,9 +57,9 @@ const OwnerDashbord = () => {
             </div>
             <img src={myShopData?.image} alt={myShopData?.name} className='w-full h-48 sm:h-64 object-cover' />
             <div className="p-4 sm:p-6">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
                 {myShopData?.name}
-              </h1>
+              </h2>
 
               <p className="text-gray-500">
                 {myShopData?.city}, {myShopData?.state}

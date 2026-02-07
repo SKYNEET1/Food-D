@@ -15,6 +15,7 @@ import EditItem from './components/ItemComponent/EditItem'
 import Loading from './components/Ui.shadecn/Loading'
 import { Toaster } from 'react-hot-toast'
 import useGetAllShopByCity from './hooks/useGetAllShopByCity'
+import useGetItemsByCity from './hooks/useGetItemsByCity'
 export const serverURL = "http://localhost:8085"
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
   useGetCurrentcityHook();
   useGetMyShopHook();
   useGetAllShopByCity();
+  useGetItemsByCity();
 
   const { userData, loading } = useSelector(state => state.user);
 

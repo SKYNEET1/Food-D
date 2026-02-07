@@ -7,9 +7,10 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import FoodCard from '../ItemComponent/FoodCard';
 
 const UserDashbord = () => {
-    const { currentCity, shopsInMyCity } = useSelector(state => state.user)
+    const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector(state => state.user)
     const catScrollRef = useRef();
     const shopScrollRef = useRef();
     const [showLeftCatBtn, setShowleftCatBtn] = useState(false);
@@ -102,7 +103,7 @@ const UserDashbord = () => {
 
             {/* shop */}
             <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-2.5">
-                <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best shop in {currentCity}</h1>
+                <h2 className='text-gray-800 text-2xl sm:text-3xl'>Best shop in {currentCity}</h2>
                 <div className='w-full relative'>
                     {/* Left scroll */}
                     {
@@ -134,6 +135,12 @@ const UserDashbord = () => {
                 <h2 className='text-gray-800 text-2xl sm:text-3xl'>
                     Suggested Food Items
                 </h2>
+
+                <div className='w-full h-auto flex flex-wrap gap-5 justify-center'>
+                    {itemsInMyCity?.map((item, index) => (
+                        <FoodCard key={item._id} data={item} />
+                    ))}
+                </div>
             </div>
         </div>
     );

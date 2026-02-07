@@ -77,9 +77,9 @@ const Signin = () => {
         className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8 border`}
         style={{ border: `1px solid ${borderColor}` }}>
 
-        <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
+        <h2 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
           Buddy Bites
-        </h1>
+        </h2>
         <p className="text-gray-600 mb-8">
           Login to your account to get started with delicious food deliveries
         </p>

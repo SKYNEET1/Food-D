@@ -60,9 +60,9 @@ overflow-visible'>
             </div>}
 
 
-            <h1 className='text-3xl font-bold mb-2 text-[#ff4d2d]'>
+            <h2 className='text-3xl font-bold mb-2 text-[#ff4d2d]'>
                 Buddy Bite
-            </h1>
+            </h2>
 
             {
 

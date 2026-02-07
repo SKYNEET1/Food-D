@@ -13,7 +13,7 @@ exports.getAllShopByCity = async (req, res) => {
         city = city.trim().toLowerCase();
 
         const shopDetails = await shop.find({ city }).limit(50).populate("foodItems").lean(); //.lean() will help u to give plane js object not mongo object so no other features like .save() etc will work.
-        if (!shopDetails.length === 0) {
+        if (shopDetails.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: `Current coverage does not include ${city}`
