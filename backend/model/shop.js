@@ -10,10 +10,14 @@ const shopSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    public_id: {
+        type: String
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"User",
-        required:true
+        required:true,
+        index:true
     },
     ownerEmail:{
         type:String,

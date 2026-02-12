@@ -33,10 +33,13 @@ exports.createAndUpdateShop = async (req, res) => {
                 });
             }
 
-            updateData.image = uploadedImage;
+            updateData.image = uploadedImage.url;
+            updateData.public_id = uploadedImage.public_id;
 
             if (fs.existsSync(req.file.path)) {
-                fs.unlink(req.file.path, () => { });
+                fs.unlink(req.file.path, (err) => {
+                    if (err) console.error("File cleanup error:", err);
+                });
             }
         }
 

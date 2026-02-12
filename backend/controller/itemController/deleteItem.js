@@ -1,13 +1,15 @@
 const { options } = require("joi");
 const Item = require("../../model/Item");
 const Shop = require("../../model/shop");
+const { v2: cloudinary } = require("cloudinary");
 
 exports.deleteItem = async (req, res) => {
     try {
         const { itemId } = req.params;
         const { _id: ownerId } = req.user;
 
-        const shopDetails = await Shop.findOne({ owner: ownerId });
+        const shopDetails = await Shop.findOne({ owner: ownerId }).select("_id").lean();
+        // shopDetails => { _id: new ObjectId('69804a5ee005e64103da6d7e') }
         if (!shopDetails) {
             return res.status(404).json({
                 success: false,
@@ -15,41 +17,42 @@ exports.deleteItem = async (req, res) => {
             });
         }
 
-        const isItemInShop = shopDetails.foodItems.some(
-            (id) => id.toString() === itemId
-        );
+        const deletedItem = await Item.findOneAndDelete({
+            _id: itemId,
+            shop: shopDetails._id
+        });
 
-        if (!isItemInShop) {
+        if (!deletedItem) {
             return res.status(403).json({
                 success: false,
-                message: "You are not allowed to delete this item"
+                message: "Item not found or not autherised"
             });
         }
 
-        const item = await Item.findByIdAndDelete(itemId);
-        if (!item) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found"
-            });
+        if (deletedItem.image && deletedItem.image.public_id) {
+            console.log('Successfully deleted from cloudinary cloud');
+            await cloudinary.uploader.destroy(deletedItem.image.public_id);
         }
 
-        shopDetails.foodItems = shopDetails.foodItems.filter(
-            (id) => id.toString() !== itemId
-        );
+        await Shop.updateOne(
+            { _id: shopDetails._id },
+            {
+                $pull: {
+                    foodItems: itemId
+                }
+            }
+        )
 
-        await shopDetails.save();
-
-        await shopDetails.populate({
+        const updatedShop = await Shop.findById(shopDetails._id).populate({
             path: "foodItems",
-            options:{sort:{updateAt:-1}},
+            options: { sort: { updatedAt: -1 } },
             select: "name price image category foodType"
-        });
+        });;
 
         return res.status(200).json({
             success: true,
             message: "Item deleted successfully",
-            data: shopDetails
+            data: updatedShop
         });
 
     } catch (error) {

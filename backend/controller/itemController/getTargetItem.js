@@ -12,6 +12,8 @@ exports.getTargetItem = async (req, res) => {
       });
     }
 
+    
+
     const item = await Item.findById(itemId).lean();
 
     if (!item) {

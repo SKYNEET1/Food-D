@@ -1,5 +1,5 @@
 const Item = require("../../model/Item");
-const shop = require("../../model/Shop");
+const shop = require("../../model/shop");
 
 exports.getItemByCity = async (req, res) => {
     try {
@@ -12,7 +12,7 @@ exports.getItemByCity = async (req, res) => {
             });
         }
 
-        const shops = await shop.find({ city }).lean();
+        const shops = await shop.find({ city }).select('_id').lean();
 
         if (shops.length === 0) {
             return res.status(404).json({

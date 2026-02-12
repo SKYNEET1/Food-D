@@ -48,6 +48,9 @@ const Itemchema = new mongoose.Schema({
     rating: {
         average: { type: Number, default: 0 },
         count: { type: Number, default: 0 }
+    },
+    public_id: {
+        type: String
     }
 }, { timestamps: true });
 

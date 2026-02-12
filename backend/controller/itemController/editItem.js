@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
 const Item = require('../../model/Item');
 const shop = require('../../model/shop');
 const { uploadOnCloudinary } = require('../../utils/cloudinary');
+const { v2: cloudinary } = require("cloudinary");
 const fs = require('fs');
 
 exports.editItem = async (req, res) => {
@@ -10,14 +10,7 @@ exports.editItem = async (req, res) => {
         const { name, category, foodType, price } = req.body;
         const { _id, email } = req.user;
 
-        const updateData = {};
-
-        if (name) updateData.name = name;
-        if (category) updateData.category = category;
-        if (foodType) updateData.foodType = foodType;
-        if (price !== undefined) updateData.price = Number(price);
-
-        const shopDoc = await shop.findOne({ owner: _id });
+        const shopDoc = await shop.findOne({ owner: _id }).select('_id').lean();
         if (!shopDoc) {
             return res.status(404).json({
                 success: false,
@@ -25,15 +18,21 @@ exports.editItem = async (req, res) => {
             });
         }
 
-        const item = await Item.findOne({ _id: itemId, shop: shopDoc._id });
+        const existingItem = await Item.findOne({ _id: itemId, shop: shopDoc._id });
 
-        if (!item) {
+        if (!existingItem) {
             return res.status(403).json({
                 success: false,
                 message: "You are not allowed to edit this item",
             });
         }
 
+        const updateData = {};
+
+        if (name) updateData.name = name;
+        if (category) updateData.category = category;
+        if (foodType) updateData.foodType = foodType;
+        if (price !== undefined) updateData.price = Number(price);
 
         if (req.file) {
             const image = await uploadOnCloudinary(req.file.path);
@@ -45,15 +44,20 @@ exports.editItem = async (req, res) => {
                 });
             }
 
-            updateData.image = image;
+            if (existingItem.public_id) {
+                await cloudinary.uploader.destroy(existingItem.public_id);
+            }
+
+            updateData.image = image.url;
+            updateData.public_id = image.public_id;
 
             fs.unlink(req.file.path, (err) => {
                 if (err) console.error("File cleanup error:", err);
             });
         }
 
-        await Item.findByIdAndUpdate(
-            itemId,
+        await Item.findOneAndUpdate(
+            { _id: itemId, shop: shopDoc._id },
             { $set: updateData },
             { new: true }
         );

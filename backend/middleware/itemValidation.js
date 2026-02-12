@@ -55,6 +55,11 @@ const validateCreateItem = async (req, res, next) => {
                 "number.min": "Price cannot be negative",
                 "any.required": "Price is required",
             }),
+        public_id: joi.string()
+            .messages({
+                "string.base": "Public Id must be a string",
+                "any.required": "Public Id is required",
+            })
     })
 
     const { error, value } = validateItemSchema.validate(req.body, {
@@ -96,6 +101,12 @@ const validateEditItem = async (req, res, next) => {
             .uri()
             .messages({
                 "string.uri": "Image must be a valid URL",
+            }),
+
+        public_id: joi.string()
+            .messages({
+                "string.base": "Public Id must be a string",
+                "any.required": "Public Id is required",
             }),
 
         category: joi.string()

@@ -10,8 +10,6 @@ module.exports = {
         category: "consumer"
     },
 
-
-
     invalidUser: {
         usernameMissing: {
             userName: "",

@@ -1,5 +1,4 @@
 const request = require('supertest');
-const user = require('../../model/User');
 const { setUpDb, closeDB, clearDB } = require('./config/setup');
 const app = require('..');
 const { validUser, invalidUser } = require('./payload/payload');

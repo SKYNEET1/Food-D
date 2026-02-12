@@ -9,7 +9,7 @@ exports.createItem = async (req, res) => {
         const { name, category, foodType, price } = req.body;
         const { email, _id } = req.user;
 
-        const isShop = await shop.findOne({ owner: _id });
+        const isShop = await shop.findOne({ owner: _id }).select('_id').lean();
         if (!isShop) {
             return res.status(400).json({
                 success: false,
@@ -36,7 +36,8 @@ exports.createItem = async (req, res) => {
                 });
             }
 
-            values.image = image;
+            values.image = image.url;
+            values.public_id = image.public_id
 
             fs.unlink(req.file.path, (err) => {
                 if (err) console.error("File cleanup error:", err);
@@ -44,20 +45,21 @@ exports.createItem = async (req, res) => {
         }
 
         const result = await Item.create(values);
-        const shopItem = await shop.findOne({ owner: _id, ownerEmail: email });
-        shopItem.foodItems.push(result._id);
-        await shopItem.save();
-
-        const updatedShop = await shop.findOne({
-            owner: _id,
-            ownerEmail: email
-        }).populate({
+        const updatedShop = await shop.findOneAndUpdate(
+            { owner: _id },
+            {
+                $push: {
+                    foodItems: result._id
+                }
+            },
+            {new : true}
+        ).populate({
             path: "foodItems",
             select: "name price image category foodType",
-            options:{sort:{updatedAt:-1}}
+            options: { sort: { updatedAt: -1 } }
         });
 
-        console.log('populated >>>',updatedShop);
+        console.log('populated >>>', updatedShop);
 
 
         return res.status(201).json({
